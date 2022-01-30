@@ -1,0 +1,22 @@
+FROM ubuntu:latest
+
+ENV GCC_VERSION=11
+ENV CLANG_VERSION=12
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y -qq software-properties-common lsb-release wget git
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
+
+RUN apt-get install -y -qq gcc-${GCC_VERSION} gcc-${GCC_VERSION}-multilib
+RUN apt-get install -y -qq g++-${GCC_VERSION} g++-${GCC_VERSION}-multilib
+RUN apt-get install -y -qq clang-${CLANG_VERSION}
+
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+RUN apt-add-repository -y "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+RUN apt-get install -y -qq kitware-archive-keyring
+RUN rm /etc/apt/trusted.gpg.d/kitware.gpg
+RUN apt-get install -y -qq cmake
+
+RUN apt-get install -y -qq python3-dev python-is-python3 python3.8-venv
+RUN apt-get install -y -qq libopencv-dev libtbb-dev
